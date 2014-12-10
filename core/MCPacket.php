@@ -51,7 +51,7 @@ class MCPacket {
      * Store short value to data buffer
      */
     public function writeShort($value) {
-        $this->data .= pack("s", $value);
+        $this->data .= pack("n", $value);
     }
 
     /**
@@ -93,7 +93,7 @@ class MCPacket {
     public function readShort() {
         $result = 0;
         if ($this->data != NULL && strlen($this->data) >= $this->position + 2) {
-            $arr = unpack("s", substr($this->data, $this->position, 2));
+            $arr = unpack("n", substr($this->data, $this->position, 2));
             if (count($arr) > 0) {
                 $result = $arr[1];
                 $this->position += 2;
@@ -151,10 +151,19 @@ class MCPacket {
     }
 
     /**
-     * Return content of data buffer
+     * Return content of data buffer and clear it
      */
-    public function getData() {
-        return $this->data;
+    public function flush() {
+        $result = $this->data;
+        $this->clearData();
+        return $result;
     }
 
+        /**
+     * Return content of data buffer
+     */
+    public function getBuffer() {
+        $result = $this->data;
+        return $result;
+    }
 }

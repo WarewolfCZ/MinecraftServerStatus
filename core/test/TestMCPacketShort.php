@@ -12,15 +12,23 @@ $packet->writeShort(52);
 $packet->clearData();
 $value = $packet->readShort();
 $result = $result && assert($value == NULL);
-$result = $result && assert(strlen($packet->getData()) == 0);
+$result = $result && assert(strlen($packet->getBuffer()) == 0);
 
 // test short
 echo "Test short<br />";
 $packet = new MCPacket();
 $packet->writeShort(54);
 $value = $packet->readShort();
-$result = $result && assert(bin2hex($packet->getData()) == "3600");
+$result = $result && assert(bin2hex($packet->getBuffer()) == "0036");
 $result = $result && assert($value == 54);
+
+// test2 short
+echo "Test2 short<br />";
+$packet = new MCPacket();
+$packet->writeShort(25565);
+$value = $packet->readShort();
+echo "getBuffer(): " . bin2hex($packet->getBuffer()) . "<br/>";
+$result = $result && assert(bin2hex($packet->getBuffer()) == "63dd"); // 1010 1100 0000 0010
 
 // test two short values
 echo "Test 2x short<br />";
@@ -31,7 +39,7 @@ $value1 = $packet->readShort();
 $value2 = $packet->readShort();
 $result = $result && assert($value1 == 54);
 $result = $result && assert($value2 == 32);
-$result = $result && assert(bin2hex($packet->getData()) == "36002000");
+$result = $result && assert(bin2hex($packet->getBuffer()) == "00360020");
 
 
 

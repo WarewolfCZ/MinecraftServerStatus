@@ -4,6 +4,7 @@
  */
 require_once('exception/MCPingException.php');
 require_once('exception/MCConnException.php');
+require_once('MCConnection.php');
 require_once('MCPinger.php');
 
 class MCServer {
@@ -23,23 +24,17 @@ class MCServer {
      * @throws MCPingException
      **/
     public function ping() {
-        $delay = -1;
+        $latency = -1;
         $fp = fsockopen($this->host, $this->port, $errno, $errstr, self::$CONNECT_TIMEOUT);
         if (!$fp) {
             throw new MCConnException( $this->host . ": " . $errstr);
         } else {
-            $pinger = new MCPinger($fp, $this->host, $this->port);
+            $conn = new MCConnection($fp);
+            $pinger = new MCPinger($conn, $this->host, $this->port, 47, 1234);
             $pinger->handshake();
-            //fwrite($fp, "You message");
-            /*while (!feof($fp)) {
-                echo fgets($fp, 128);
-            }*/
+            $latency = $pinger->ping();
             fclose($fp);
         }
-        
-        if (true) {
-            throw new MCPingException("Cannot ping server " . $this->host);
-        }
-        return $delay;
+        return $latency;
     }
 }

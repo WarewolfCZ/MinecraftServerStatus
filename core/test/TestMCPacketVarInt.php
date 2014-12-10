@@ -12,14 +12,14 @@ $packet->writeVarInt(125);
 $packet->clearData();
 $value = $packet->readVarInt();
 $result = $result && assert($value == NULL);
-$result = $result && assert(strlen($packet->getData()) == 0);
+$result = $result && assert(strlen($packet->getBuffer()) == 0);
 
 // test VarInt
 echo "Test VarInt<br />";
 $packet = new MCPacket();
 $packet->writeVarInt(300);
 $value = $packet->readVarInt();
-$result = $result && assert(bin2hex($packet->getData()) == "ac02"); // 1010 1100 0000 0010
+$result = $result && assert(bin2hex($packet->getBuffer()) == "ac02"); // 1010 1100 0000 0010
 $result = $result && assert($value == 300);
 
 // test two VarInt values

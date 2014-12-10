@@ -14,9 +14,9 @@ require_once(__DIR__.'/MCServer.php');
 
 $server = new MCServer("77.93.202.250", 25565);
 
-echo get_class($server);
+echo get_class($server) . "<br />\n";
 try {
-    echo "Pig latency: " . $server->ping();
+   printf("Ping latency: %1.3f ms", $server->ping());
 } catch (MCPingException $e) {
     echo '<br/>'. $e->errorMessage();
 } catch (MCConnException $e) {

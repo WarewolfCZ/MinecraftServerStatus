@@ -12,14 +12,14 @@ $packet->writeUtf("FOO");
 $packet->clearData();
 $value = $packet->readUtf();
 $result = $result && assert($value == NULL);
-$result = $result && assert(strlen($packet->getData()) == 0);
+$result = $result && assert(strlen($packet->getBuffer()) == 0);
 
 // test string
 echo "Test string<br />";
 $packet = new MCPacket();
 $packet->writeUtf("FOO");
 $value = $packet->readUtf();
-$result = $result && assert(bin2hex($packet->getData()) == "03464f4f");
+$result = $result && assert(bin2hex($packet->getBuffer()) == "03464f4f");
 $result = $result && assert($value == "FOO");
 
 // test two strings
@@ -29,7 +29,7 @@ $packet->writeUtf("FOO");
 $packet->writeUtf("BAR");
 $value1 = $packet->readUtf();
 $value2 = $packet->readUtf();
-$result = $result && assert(bin2hex($packet->getData()) == "03464f4f03424152");
+$result = $result && assert(bin2hex($packet->getBuffer()) == "03464f4f03424152");
 $result = $result && assert($value1 == "FOO");
 $result = $result && assert($value2 == "BAR");
 

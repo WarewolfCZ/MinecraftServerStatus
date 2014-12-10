@@ -12,7 +12,7 @@ class MCPinger {
     private $port;
     private $version;
     private $pingToken;
-    private static $BUFFER_SIZE = 100;
+    
 
     public function __construct($connection, $host, $port = 0, $version = 47, $pingToken = NULL) {
         $this->conn = $connection;
@@ -25,6 +25,9 @@ class MCPinger {
         $this->pingToken = $pingToken;
     }
 
+    /**
+     * Initialize communication
+     */
     public function handshake() {
         $packet = new MCPacket();
         $packet->writeVarInt(0);
@@ -32,22 +35,28 @@ class MCPinger {
         $packet->writeUtf($this->host);
         $packet->writeShort($this->port);
         $packet->writeVarInt(1);  // Intention to query status
-        echo "handshake data: " . substr(chunk_split(bin2hex($packet->getData()), 4, " "), 0, -1);
-        fwrite($this->conn, $packet->getData());
+        echo "handshake data: " . substr(chunk_split(bin2hex($packet->getBuffer()), 4, " "), 0, -1) . "<br />\n";
+        $this->conn->writePacket($packet);
+        
     }
 
+    /**
+     * Ping server and return latency [ms]
+     * @return float
+     * @throws MCPingException
+     */
     public function ping() {
         // create and send ping request
         $packet = new MCPacket();
         $packet->writeVarInt(1); // Test ping
         $packet->writeLong($this->pingToken);
         $sent = microtime(true);
-        fwrite($this->conn, $packet->getData());
+        //echo "ping data: " . substr(chunk_split(bin2hex($packet->getBuffer()), 4, " "), 0, -1) . "<br />\n";
+        $this->conn->writePacket($packet);
 
         // receive ping response
-        $buffer = fread($this->conn, self::$BUFFER_SIZE);
-        if ($buffer != FALSE) {
-            $response = new MCPacket($buffer);
+        $response = $this->conn->readPacket();
+        if ($response != NULL) {
             $received = microtime(true);
             if ($response->readVarInt() != 1) {
                 throw new MCPingException("Received invalid ping response packet.");
@@ -58,7 +67,7 @@ class MCPinger {
                 $this->pingToken . "\", received \"" . $receivedToken . "\")");
             }
 
-            $delta = ($received - $sent);
+            $delta = ($received - $sent) * 1000.0;
             // We have no trivial way of getting a time delta :(
             return $delta; //(delta.days * 24 * 60 * 60 + delta.seconds) * 1000 + delta.microseconds / 1000.0
         }

@@ -12,7 +12,7 @@ $packet->writeLong(125);
 $packet->clearData();
 $value = $packet->readLong();
 $result = $result && assert($value == NULL);
-$result = $result && assert(strlen($packet->getData()) == 0);
+$result = $result && assert(strlen($packet->getBuffer()) == 0);
 
 // test single long
 echo "Test 1x long<br />";
@@ -32,8 +32,8 @@ $result = $result && assert($value1 == 9864654654125);
 $result = $result && assert($value2 == 6622644);
 
 
-echo strtoupper(bin2hex($packet->getData())) . "<br />\n";
-echo strlen($packet->getData()) . "<br />\n";
+echo strtoupper(bin2hex($packet->getBuffer())) . "<br />\n";
+echo strlen($packet->getBuffer()) . "<br />\n";
 
 if ($result) {
     echo "MCPacket long tests OK<br/>\n";
