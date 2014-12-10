@@ -83,7 +83,7 @@ class MCPacket {
                     return $result;
                 }
             }
-            throw MCException("Server sent a varint that was too big!");
+            throw new MCException("Server sent a varint that was too big!");
         }
     }
 

@@ -4,6 +4,7 @@
  * @author WarewolfCZ
  */
 require_once("MCPacket.php");
+require_once("exception/MCException.php");
 
 class MCConnection {
 
@@ -48,7 +49,7 @@ class MCConnection {
                 return $result;
             }
         }
-        throw MCException("Server sent invalid length");
+        throw new MCException("Server sent invalid length");
     }
 
 }

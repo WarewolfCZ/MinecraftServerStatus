@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 defined('ABSPATH') or die("No script kiddies please!");
 
 require_once("core/MCServer.php");
+require_once("core/exception/MCException.php");
 
 add_option("server-url", "", null, 'yes');
 add_option("server-port", "", null, 'yes');
