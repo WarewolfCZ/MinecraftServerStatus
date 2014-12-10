@@ -31,6 +31,14 @@ class MCStatus {
     
     /**
      * 
+     * @return float
+     */
+    public function getLatency() {
+        return $this->latency;
+    }
+    
+    /**
+     * 
      * @return int
      */
     public function getOnlinePlayers() {

@@ -15,8 +15,8 @@ class MCServer {
     
     public function __construct($mchost, $mcport=25565) {
         //TODO: validate host and port
-        $this->host = $mchost;
-        $this->port = $mcport;
+        $this->host = htmlspecialchars($mchost);
+        $this->port = (int) $mcport;
     }
     
     /**

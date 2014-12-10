@@ -30,6 +30,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 defined('ABSPATH') or die("No script kiddies please!");
 
+require_once("core/MCServer.php");
+
 add_option("server-url", "", null, 'yes');
 add_option("server-port", "", null, 'yes');
 
@@ -40,26 +42,23 @@ class MssWidget extends WP_Widget {
 
     function MssWidget() {
         $widget_ops = array( 'classname' => 'example', 'description' => __('Status of minecraft server', 'mss_widget_domain') );
-        $control_ops = array( 'width' => 300, 'height' => 350, 'id_base' => 'mss_widget' );
         $this->WP_Widget( 'mss_widget', __('MinecraftServerStatus', 'mss_widget_domain'), $widget_ops);//, $control_ops );
     }
 
-    // Creating widget front-end
-    // This is where the action happens
+    // widget front-end
     public function widget($args, $instance) {
-        $title = apply_filters('widget_title', $instance['title']);
-        // before and after widget arguments are defined by themes
-        echo $args['before_widget'];
-        if (!empty($title)) {
-            echo $args['before_title'] . $title . $args['after_title'];
+        $server = new MCServer($instance['host'], $instance['port']);
+        $status = NULL;
+        //TODO: move status query to separate script
+        try {
+            $status = $server->status();
+        } catch (Exception $ex) {
+            $status = NULL;
         }
-
-        // This is where you run the code and display the output
-        echo __('Hello, World!', 'mss_widget_domain');
-        echo $args['after_widget'];
+        require dirname(__FILE__) . '/templates/widget.phtml';
     }
 
-    // Widget Backend 
+    // widget Backend 
     public function form($instance) {
         $defaults = array(
             'title' => 'Server status',
@@ -68,13 +67,21 @@ class MssWidget extends WP_Widget {
             'show_status' => 'on',
             'show_host' => 'on',
             'show_port' => 'on',
+            'show_ping' => 'on',
             'show_players' => 'on',
             'show_auto_players' => '',
             'show_version' => 'on',
             'show_plugins' => 'on',
             'avatar_size' => '25'
         );
-        $instance = wp_parse_args( (array) $instance, $defaults );
+        //TODO: fix default values
+        /*
+        if (empty($instance)) {
+            $instance = wp_parse_args( (array) $instance, $defaults );
+        } else {
+            $instance = $this->hydrate($instance, $defaults);
+        }
+         */
         
         // Widget admin form
         require dirname(__FILE__) . '/templates/form.phtml';
@@ -94,6 +101,14 @@ class MssWidget extends WP_Widget {
         return $instance;
     }
 
+    private function hydrate(array $defaults, array $instance) {
+        foreach ($defaults as $key => $val) {
+            if (!array_key_exists($key, $instance)) {
+                $instance[$key] = "";
+            }
+        }
+        return $instance;
+    }
 }
 
 // Class mss_widget ends here
