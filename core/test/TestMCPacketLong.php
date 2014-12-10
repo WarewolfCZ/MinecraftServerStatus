@@ -1,22 +1,36 @@
 <?php
-
+/**
+ * @author WarewolfCZ
+ */
 require_once("MCPacket.php");
 $result = true;
 
 // test clear
+echo "Test clear<br />";
 $packet = new MCPacket();
-$packet->writeVarInt(125);
+$packet->writeLong(125);
 $packet->clearData();
-$value = $packet->readInt();
-$result = $result && assert($value == NULL/*, "Value is not null"*/);
-$result = $result && assert(strlen($packet->getData()) == 0/*, "Data length is not 0"*/);
+$value = $packet->readLong();
+$result = $result && assert($value == NULL);
+$result = $result && assert(strlen($packet->getData()) == 0);
 
 // test single long
+echo "Test 1x long<br />";
 $packet = new MCPacket();
-$packet->addLong(125);
+$packet->writeLong(125);
 $value = $packet->readLong();
-$result = $result && assert($value == 125/*, "Value is not equal to 125"*/);
-$result = $result && assert(strlen($packet->getData()) == 4/*, "Data length is not 4"*/);
+$result = $result && assert($value == 125);
+
+// test 2x long
+$packet = new MCPacket();
+echo "Test 2x long<br />";
+$packet->writeLong(9864654654125);
+$packet->writeLong(6622644);
+$value1 = $packet->readLong();
+$value2 = $packet->readLong();
+$result = $result && assert($value1 == 9864654654125);
+$result = $result && assert($value2 == 6622644);
+
 
 echo strtoupper(bin2hex($packet->getData())) . "<br />\n";
 echo strlen($packet->getData()) . "<br />\n";

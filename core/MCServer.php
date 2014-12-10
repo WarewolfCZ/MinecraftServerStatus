@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * @author WarewolfCZ
+ */
 require_once('exception/MCPingException.php');
 require_once('exception/MCConnException.php');
 require_once('MCPinger.php');
@@ -35,7 +37,9 @@ class MCServer {
             fclose($fp);
         }
         
-        if (true) throw new MCPingException("Cannot ping server " . $this->host);
+        if (true) {
+            throw new MCPingException("Cannot ping server " . $this->host);
+        }
         return $delay;
     }
 }

@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * @author WarewolfCZ
+ */
 require_once('MCException.php');
 
 class MCPingException extends MCException {

@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * @author WarewolfCZ
+ */
 class MCException extends Exception {
     public function errorMessage() {
         //error message

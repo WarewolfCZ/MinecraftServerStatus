@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * @author WarewolfCZ
+ */
 require_once("MCPacket.php");
 $result = true;
 
