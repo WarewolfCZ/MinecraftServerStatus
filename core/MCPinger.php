@@ -4,6 +4,7 @@
  * @author WarewolfCZ
  */
 require_once('MCPacket.php');
+require_once('MCStatus.php');
 
 class MCPinger {
 
@@ -12,7 +13,6 @@ class MCPinger {
     private $port;
     private $version;
     private $pingToken;
-    
 
     public function __construct($connection, $host, $port = 0, $version = 47, $pingToken = NULL) {
         $this->conn = $connection;
@@ -35,9 +35,7 @@ class MCPinger {
         $packet->writeUtf($this->host);
         $packet->writeShort($this->port);
         $packet->writeVarInt(1);  // Intention to query status
-        echo "handshake data: " . substr(chunk_split(bin2hex($packet->getBuffer()), 4, " "), 0, -1) . "<br />\n";
         $this->conn->writePacket($packet);
-        
     }
 
     /**
@@ -51,7 +49,6 @@ class MCPinger {
         $packet->writeVarInt(1); // Test ping
         $packet->writeLong($this->pingToken);
         $sent = microtime(true);
-        //echo "ping data: " . substr(chunk_split(bin2hex($packet->getBuffer()), 4, " "), 0, -1) . "<br />\n";
         $this->conn->writePacket($packet);
 
         // receive ping response
@@ -66,11 +63,26 @@ class MCPinger {
                 throw new MCPingException("Received mangled ping response packet (expected token \"" .
                 $this->pingToken . "\", received \"" . $receivedToken . "\")");
             }
-
+            // calculate time between request and response
             $delta = ($received - $sent) * 1000.0;
-            // We have no trivial way of getting a time delta :(
-            return $delta; //(delta.days * 24 * 60 * 60 + delta.seconds) * 1000 + delta.microseconds / 1000.0
+            return $delta;
         }
     }
 
+    public function getStatus() {
+        $result = new MCStatus();
+        $result->setLatency($this->ping());
+        $packet = new MCPacket();
+        $packet->writeVarInt(0); // Request status
+        $this->conn->writePacket($packet);
+        
+        
+        $response = $this->conn->readPacket();
+        if ($response != NULL && $response->readVarInt() != 0) {
+            throw new MCException("Received invalid status response packet.");
+        } else {
+            $result->decodeJson($response->readUtf());
+        }
+        return $result;
+    }
 }

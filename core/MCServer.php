@@ -37,4 +37,21 @@ class MCServer {
         }
         return $latency;
     }
+    
+    /**
+     * Get server status
+     * @return type
+     * @throws MCConnException
+     */
+    public function status() {
+        $fp = fsockopen($this->host, $this->port, $errno, $errstr, self::$CONNECT_TIMEOUT);
+        if (!$fp) {
+            throw new MCConnException( $this->host . ": " . $errstr);
+        } else {
+            $conn = new MCConnection($fp);
+            $pinger = new MCPinger($conn, $this->host, $this->port, 47, 1234);
+            $pinger->handshake();
+            return $pinger->getStatus();
+        }
+    }
 }

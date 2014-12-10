@@ -16,7 +16,11 @@ $server = new MCServer("77.93.202.250", 25565);
 
 echo get_class($server) . "<br />\n";
 try {
-   printf("Ping latency: %1.3f ms", $server->ping());
+   printf("Ping latency: %1.3f ms<br />\n", $server->ping());
+   $status = $server->status();
+   printf("Slots: %d<br />\n", $status->getMaxPlayers());
+   printf("Version: %s<br />\n", $status->getVersion());
+   printf("Description: %s<br />\n", $status->getDescription());
 } catch (MCPingException $e) {
     echo '<br/>'. $e->errorMessage();
 } catch (MCConnException $e) {
