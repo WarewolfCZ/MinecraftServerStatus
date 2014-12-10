@@ -2,7 +2,9 @@
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
-require("test/TestMCPacketInt.php");
+require("test/TestMCPacketVarInt.php");
+require("test/TestMCPacketString.php");
+require("test/TestMCPacketShort.php");
 require("test/TestMCPacketLong.php");
 
 require_once(__DIR__.'/MCServer.php');

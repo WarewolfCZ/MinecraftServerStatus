@@ -23,11 +23,11 @@ class MCPinger {
     
     public function handshake() {
         $packet = new MCPacket();
-        $packet->addVarInt(0);
-        $packet->addVarInt($this->version);
-        $packet->addString($this->host);
-        $packet->addShort($this->port);
-        $packet->addVarInt(1);  // Intention to query status
+        $packet->writeVarInt(0);
+        $packet->writeVarInt($this->version);
+        $packet->writeUtf($this->host);
+        $packet->writeShort($this->port);
+        $packet->writeVarInt(1);  // Intention to query status
         echo "handshake data: " . substr(chunk_split(bin2hex($packet->getData()),4," "), 0, -1);
         fwrite($this->conn, $packet->getData());
     }
@@ -35,7 +35,7 @@ class MCPinger {
     public function ping() {
         // create and send ping request
         $packet = new MCPacket();
-        $packet->addVarInt(1); // Test ping
+        $packet->writeVarInt(1); // Test ping
         $packet->addLong($this->pingToken);
         $sent = microtime(true);
         fwrite($this->conn, $packet->getData());

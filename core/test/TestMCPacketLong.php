@@ -5,7 +5,7 @@ $result = true;
 
 // test clear
 $packet = new MCPacket();
-$packet->addVarInt(125);
+$packet->writeVarInt(125);
 $packet->clearData();
 $value = $packet->readInt();
 $result = $result && assert($value == NULL/*, "Value is not null"*/);

@@ -1,4 +1,5 @@
 <?php
+require_once('exception/MCException.php');
 
 class MCPacket {
     private $data;
@@ -12,10 +13,10 @@ class MCPacket {
     /**
      * Store VarInt value to data buffer
      */
-    public function addVarInt($value) {
-        var $remaining = (int) $value;
-        for ($i = 1; $i < 5; $i++) {
-            if ($remaining & ~0x7F == 0) { // 8th bit is 0
+    public function writeVarInt($value) {
+        $remaining = (int) $value;
+        for ($i = 0; $i < 5; $i++) {
+            if (($remaining & ~0x7F) == 0) { // 8th bit is 0
                 $this->data .= pack("C", $remaining); // pack as unsigned char
                 return;
             } else {
@@ -32,35 +33,61 @@ class MCPacket {
      * Store long value to data buffer
      */
     public function addLong($value) {
-        $this->data .= pack("L", (long) $value);
+        $this->data .= pack("L", $value);
     }
     
-    public function addShort($value) {
-        //$this->data .= pack("v", (int) $value);
+    /**
+     * Store short value to data buffer
+     */
+    public function writeShort($value) {
+        $this->data .= pack("s", $value);
     }
     
     /* 
      * Store string to data buffer
      */
-    public function addString($value) {
-        $this->data .= pack("v", $value);
+    public function writeUtf($value) {
+        if ($value != NULL) {
+            // add string size at the beginning
+            $this->writeVarInt(strlen($value));
+            $this->data .= pack('a*', $value);
+        }
     }
     
     /**
      * Parse next VarInt value and return it, buffer position is incremented
      */
     public function readVarInt() {
-        $result = NULL;
-        if ($this->data != NULL && strlen($this->data) >= $this->position + 4) {
-            $arr = unpack("I", substr($this->data, $this->position, 4));
-            if (count($arr) > 0) {
-                if ($arr[1] < 0) {
-                    $result = (int) sprintf('%u', $arr[1]);
-                } else {
-                    $result = $arr[1];
+        $result = 0;
+        if ($this->data != NULL) {
+            for ($i = 0; $i < 5; $i++) {
+                $index = $this->position + $i;
+                // bindec is expecting string, not binary string => not usable
+                $part = hexdec(bin2hex(substr($this->data, $index, 1)));
+                //printf("part: %d <br/>", $part);
+                // add part to result (shift by i * 7)
+                $result |= ($part & 0x7F) << 7 * $i;
+                if (($part & 0x80) == 0) { // 8th bit is set to zero => last octet of VarInt
+                    $this->position += $i + 1;
+                    return $result;
                 }
-                $this->position += 4;
             }
+            throw MCException("Server sent a varint that was too big!");
+        }
+    }
+    
+    /**
+     * Parse next short value and return it + increment buffer position
+     */
+    public function readShort() {
+        $result = 0;
+        if ($this->data != NULL && strlen($this->data) >= $this->position + 2) {
+            $arr = unpack("s", substr($this->data, $this->position, 2));
+            if (count($arr) > 0) {
+                $result = $arr[1];
+                $this->position += 2;
+            }
+            
         }
         return $result;
     }
@@ -75,6 +102,23 @@ class MCPacket {
             if (count($arr) > 0) {
                 $result = $arr[1];
                 $this->position += 4;
+            }
+        }
+        return $result;
+    }
+    
+    /**
+     * Parse next string value and return it, buffer position is incremented
+     */
+    public function readUtf() {
+        $result = NULL;
+        if ($this->data != NULL) {
+            $length = $this->readVarInt();
+            $bindata = substr($this->data, $this->position, $length);
+            $arr = unpack("a*", $bindata);
+            if (count($arr) > 0) {
+                $this->position += $length;
+                $result = $arr[1];
             }
         }
         return $result;
