@@ -9,3 +9,8 @@ Currently supports protocol v47 (Minecraft 1.8+)
 
 
 work still in progress
+
+License
+=====================
+
+licensed under GPLv2 or later.
