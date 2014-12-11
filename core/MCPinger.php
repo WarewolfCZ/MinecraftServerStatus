@@ -69,6 +69,11 @@ class MCPinger {
         }
     }
 
+    /**
+     * Retrieve server version, players and description
+     * @return MCStatus
+     * @throws MCException
+     */
     public function getStatus() {
         $result = new MCStatus();
         $result->setLatency($this->ping());
@@ -78,10 +83,12 @@ class MCPinger {
         
         
         $response = $this->conn->readPacket();
-        if ($response != NULL && $response->readVarInt() != 0) {
-            throw new MCException("Received invalid status response packet.");
-        } else {
-            $result->decodeJson($response->readUtf());
+        if ($response != NULL) {
+            if ($response->readVarInt() != 0) {
+                throw new MCException("Received invalid status response packet.");
+            } else {
+                $result->decodeJson($response->readUtf());
+            }
         }
         return $result;
     }

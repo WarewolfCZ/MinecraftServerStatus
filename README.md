@@ -3,6 +3,9 @@ MinecraftServerStatus
 
 Minecraft server status WordPress widget
 
-based on https://github.com/Dinnerbone/mcstatus
+inspired by mcstatus by Dinnerbone: https://github.com/Dinnerbone/mcstatus
+
+Currently supports protocol v47 (Minecraft 1.8+)
+
 
 work still in progress
