@@ -23,11 +23,45 @@ class MCStatus {
      * @throws MCException
      */
     public function decodeJson($json) {
-        $ret = $this->values = json_decode($json, true); 
-        if ($ret == NULL || $ret == FALSE) {
-            throw new MCException("Cannot decode status JSON. Error code: " . json_last_error());
+        $this->values = json_decode($json, true); 
+        if ($this->values == NULL || $this->values == FALSE) {
+            throw new MCException("Cannot decode status JSON. Error code: " . 
+            json_last_error() . ": " . $this->getJsonLastErrMsg(json_last_error()));
         }
     }
+    
+    /**
+     * 
+     * Get error message based on json_last_error() error code
+     * @param int $errCode
+     */
+    private function getJsonLastErrMsg($errCode) {
+        $result = NULL;
+        switch ($errCode) {
+            case JSON_ERROR_NONE:
+                $result = ' - No errors';
+                break;
+            case JSON_ERROR_DEPTH:
+                $result = ' - Maximum stack depth exceeded';
+                break;
+            case JSON_ERROR_STATE_MISMATCH:
+                $result = ' - Underflow or the modes mismatch';
+                break;
+            case JSON_ERROR_CTRL_CHAR:
+                $result = ' - Unexpected control character found';
+                break;
+            case JSON_ERROR_SYNTAX:
+                $result = ' - Syntax error, malformed JSON';
+                break;
+            case JSON_ERROR_UTF8:
+                $result = ' - Malformed UTF-8 characters, possibly incorrectly encoded';
+                break;
+            default:
+                $result = ' - Unknown error';
+            break;
+        }
+        return $result;
+    } 
     
     /**
      * 
@@ -85,4 +119,18 @@ class MCStatus {
         }
         return $result;
     }
+    
+    /**
+     * Get protocol version number
+     * @return string
+     */
+    public function getProtocol() {
+        $result = NULL;
+        if ($this->values != NULL) {
+            $result = $this->values["version"]["protocol"];
+        }
+        return $result;
+    }
+    
+    //TODO: get favicon
 }

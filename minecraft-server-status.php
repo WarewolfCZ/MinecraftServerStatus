@@ -48,7 +48,7 @@ class MssWidget extends WP_Widget {
 
     // widget front-end
     public function widget($args, $instance) {
-        $server = new MCServer($instance['host'], $instance['port']);
+        $server = new MCServer($instance['host'], $instance['port'], 5);
         $status = NULL;
         //TODO: move status query to separate script
         try {

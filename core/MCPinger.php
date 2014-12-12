@@ -76,7 +76,6 @@ class MCPinger {
      */
     public function getStatus() {
         $result = new MCStatus();
-        $result->setLatency($this->ping());
         $packet = new MCPacket();
         $packet->writeVarInt(0); // Request status
         $this->conn->writePacket($packet);
@@ -88,6 +87,7 @@ class MCPinger {
                 throw new MCException("Received invalid status response packet.");
             } else {
                 $result->decodeJson($response->readUtf());
+                $result->setLatency($this->ping());
             }
         }
         return $result;

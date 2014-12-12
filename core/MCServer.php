@@ -11,12 +11,14 @@ class MCServer {
     
     private $host;
     private $port;
+    private $protocol;
     private static $CONNECT_TIMEOUT = 10; // connection timeout in seconds
     
-    public function __construct($mchost, $mcport=25565) {
+    public function __construct($mchost, $mcport=25565, $mcprotocol=47) {
         //TODO: validate host and port
         $this->host = htmlspecialchars($mchost);
         $this->port = (int) $mcport;
+        $this->protocol = (int) $mcprotocol;
     }
     
     /**
@@ -30,7 +32,7 @@ class MCServer {
             throw new MCConnException( $this->host . ": " . $errstr);
         } else {
             $conn = new MCConnection($fp);
-            $pinger = new MCPinger($conn, $this->host, $this->port, 47, 1234);
+            $pinger = new MCPinger($conn, $this->host, $this->port, $this->protocol);
             $pinger->handshake();
             $latency = $pinger->ping();
             fclose($fp);
@@ -49,9 +51,11 @@ class MCServer {
             throw new MCConnException( $this->host . ": " . $errstr);
         } else {
             $conn = new MCConnection($fp);
-            $pinger = new MCPinger($conn, $this->host, $this->port, 47, 1234);
+            $pinger = new MCPinger($conn, $this->host, $this->port, $this->protocol);
             $pinger->handshake();
-            return $pinger->getStatus();
+            $status = $pinger->getStatus();
+            fclose($fp);
+            return $status;
         }
     }
 }

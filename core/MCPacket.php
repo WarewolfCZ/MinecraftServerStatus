@@ -110,7 +110,7 @@ class MCPacket {
         if ($this->data != NULL && strlen($this->data) >= $this->position + 8) {
             // PHP 5.4 doesn't support unpacking 64bit numbers => we will unpack it as two 32bit
             $arr = unpack('N2', substr($this->data, $this->position, 8));
-            if (count($arr) > 0) {
+            if (count($arr) > 1) {
                 $result = $arr[1] << 32 | $arr[2];
                 $this->position += 8;
             }

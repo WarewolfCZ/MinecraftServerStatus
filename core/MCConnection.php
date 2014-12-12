@@ -27,7 +27,13 @@ class MCConnection {
         $result = NULL;
         // first value is always length
         $length = $this->freadVarInt();
-        $buffer = fread($this->conn, $length);
+        $buffer = NULL;
+        $readBytes = 0;
+        while (!feof($this->conn) && $readBytes < $length) {
+            $chunk = fread($this->conn, $length);
+            $readBytes += strlen($chunk);
+            $buffer .= $chunk;
+        }
         if ($buffer != FALSE) {
             $result = new MCPacket($buffer);
         }
