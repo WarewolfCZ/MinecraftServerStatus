@@ -75,15 +75,11 @@ class MssWidget extends WP_Widget {
             'show_plugins' => 'on',
             'avatar_size' => '25'
         );
-        //TODO: fix default values
-        /*
+        
         if (empty($instance)) {
             $instance = wp_parse_args( (array) $instance, $defaults );
-        } else {
-            $instance = $this->hydrate($instance, $defaults);
         }
-         */
-        
+         
         // Widget admin form
         require dirname(__FILE__) . '/templates/form.phtml';
     }
