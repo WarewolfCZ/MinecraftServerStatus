@@ -2,8 +2,8 @@
 
 /*
 Plugin Name: MinecraftServerStatus
-Plugin URI: http://www.warewolf.cz/minecraftserverstatus/
-Description: Widget which shows MC server status, version, player count and plugins
+Plugin URI: https://github.com/WarewolfCZ/MinecraftServerStatus
+Description: MinecraftServerStatus widget is displaying MC server status, version and player count
 Version: 1.0.0
 Author: WarewolfCZ
 Author URI: http://www.warewolf.cz
