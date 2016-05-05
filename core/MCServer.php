@@ -27,10 +27,11 @@ class MCServer {
      **/
     public function ping() {
         $latency = -1;
-        $fp = fsockopen($this->host, $this->port, $errno, $errstr, self::$CONNECT_TIMEOUT);
-        if (!$fp) {
+        
+        if (!(fsockopen($this->host, $this->port, $errno, $errstr, self::$CONNECT_TIMEOUT))) {
             throw new MCConnException( $this->host . ": " . $errstr);
         } else {
+            $fp = fsockopen($this->host, $this->port, $errno, $errstr, self::$CONNECT_TIMEOUT);
             $conn = new MCConnection($fp);
             $pinger = new MCPinger($conn, $this->host, $this->port, $this->protocol);
             $pinger->handshake();
@@ -46,10 +47,10 @@ class MCServer {
      * @throws MCConnException
      */
     public function status() {
-        $fp = fsockopen($this->host, $this->port, $errno, $errstr, self::$CONNECT_TIMEOUT);
-        if (!$fp) {
+        if (!(fsockopen($this->host, $this->port, $errno, $errstr, self::$CONNECT_TIMEOUT))) {
             throw new MCConnException( $this->host . ": " . $errstr);
         } else {
+            $fp = fsockopen($this->host, $this->port, $errno, $errstr, self::$CONNECT_TIMEOUT);
             $conn = new MCConnection($fp);
             $pinger = new MCPinger($conn, $this->host, $this->port, $this->protocol);
             $pinger->handshake();
